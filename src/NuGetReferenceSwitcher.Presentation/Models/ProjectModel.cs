@@ -13,12 +13,13 @@ using System.Windows.Threading;
 using EnvDTE;
 using MyToolkit.Collections;
 using VSLangProj;
+using MyToolkit.Model;
 
 namespace NuGetReferenceSwitcher.Presentation.Models
 {
-    public class ProjectModel
+    public class ProjectModel : ObservableObject
     {
-        private readonly VSProject _vsProject;
+        private readonly VSProject _vsProject;        
 
         /// <summary>Initializes a new instance of the <see cref="ProjectModel"/> class. </summary>
         /// <param name="project">The native project object. </param>
@@ -68,6 +69,8 @@ namespace NuGetReferenceSwitcher.Presentation.Models
         {
             get { return _vsProject.Project.FileName; }
         }
+
+       
 
         /// <summary>Deletes the previous configuration file and renames the current 
         /// configuration file to the path of the previous configuration file.  </summary>

@@ -22,6 +22,7 @@ using MyToolkit.Mvvm;
 using MyToolkit.Utilities;
 using NuGetReferenceSwitcher.Presentation.Models;
 using VSLangProj;
+using System.Collections;
 
 namespace NuGetReferenceSwitcher.Presentation.ViewModels
 {
@@ -134,7 +135,7 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
                                     PathUtilities.MakeRelative(assemblyToProjectSwitch.ToProject.Path,
                                         project.CurrentConfigurationPath) + "\t" +
                                     PathUtilities.MakeRelative(fromAssemblyPath, project.CurrentConfigurationPath) +
-                                    "\n";                                
+                                    "\n";
                             }
                             else
                             {
@@ -156,6 +157,8 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
                 }
             }, token));
         }
+
+
 
         /// <summary>Handles an exception which occured in the <see cref="M:MyToolkit.Mvvm.ViewModelBase.RunTaskAsync(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task})"/> method. </summary>
         /// <param name="exception">The exception. </param>
@@ -187,7 +190,7 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
                             {
                                 MessageBox.Show("The project '" + transformation.ToAssemblyPath + "' could not be added. " +
                                                 "\nSkipped.", "Could not add project", MessageBoxButton.OK, MessageBoxImage.Error);
-                            }                           
+                            }
                         }
                     }
 
@@ -264,5 +267,18 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
                 }
             }
         }
+
+        public string FilterText { get; set; }
+        public bool PackagesWithSource { get; set; }
+        public void FilterVisibleTransformations()
+        {
+            foreach (var transformation in Transformations)
+            {
+                transformation.Visible = (string.IsNullOrWhiteSpace(FilterText) || transformation.FromAssemblyName.IndexOf(FilterText, StringComparison.OrdinalIgnoreCase) > -1) // If we have a filter
+                    && (!PackagesWithSource 
+                    || (PackagesWithSource && !string.IsNullOrWhiteSpace(transformation.ToProjectPath))); // Only for projects where we have a path specified
+            }
+        }
+     
     }
 }

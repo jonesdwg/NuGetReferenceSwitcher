@@ -64,6 +64,13 @@ namespace NuGetReferenceSwitcher.Presentation.Models
             set { Set(ref _selectedMode, value); }
         }
 
+        private bool _visible = true;
+        public bool Visible
+        {
+            get { return _visible; }
+            set { Set(ref _visible, value); }
+        }
+
         /// <summary>Gets or sets the projectPath. </summary>
         public string ToProjectPath
         {

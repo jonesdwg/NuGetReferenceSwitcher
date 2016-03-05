@@ -75,6 +75,11 @@ namespace NuGetReferenceSwitcher.Presentation.Views
             Close();
         }
 
+        private void OnFilterChanged(object sender, RoutedEventArgs e)
+        {
+            Model.FilterVisibleTransformations();
+        }
+
         private async void OnSwitchToNuGetReferences(object sender, RoutedEventArgs e)
         {
             await Model.SwitchToNuGetReferencesAsync();
