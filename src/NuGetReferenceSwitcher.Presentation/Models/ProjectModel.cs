@@ -13,7 +13,6 @@ using System.Windows.Threading;
 using EnvDTE;
 using MyToolkit.Collections;
 using VSLangProj;
-using MyToolkit.Model;
 
 namespace NuGetReferenceSwitcher.Presentation.Models
 {
