@@ -17,7 +17,7 @@ using MyToolkit.Model;
 
 namespace NuGetReferenceSwitcher.Presentation.Models
 {
-    public class ProjectModel : ObservableObject
+    public class ProjectModel
     {
         private readonly VSProject _vsProject;        
 
@@ -69,8 +69,6 @@ namespace NuGetReferenceSwitcher.Presentation.Models
         {
             get { return _vsProject.Project.FileName; }
         }
-
-       
 
         /// <summary>Deletes the previous configuration file and renames the current 
         /// configuration file to the path of the previous configuration file.  </summary>
