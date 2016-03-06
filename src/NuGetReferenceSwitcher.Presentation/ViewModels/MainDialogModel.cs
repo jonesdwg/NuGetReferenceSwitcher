@@ -73,6 +73,12 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
             get { return ExtensionAssembly != null ? ExtensionAssembly.GetVersionWithBuildTime() : "n/a"; }
         }
 
+        /// <summary> Text used to filter the list of packages </summary>
+        public string FilterText { get; set; }
+
+        /// <summary> Flag to indicate whether to show all packages, or just those which have a project and therefore source code defined </summary>
+        public bool PackagesWithSource { get; set; }
+
         /// <summary>Initializes the view model. Must only be called once per view model instance 
         /// (after the InitializeComponent method of a <see cref="!:UserControl"/>). </summary>
         public async override void Initialize()
@@ -204,6 +210,15 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
             }, token));
         }
 
+        /// <summary> Show and hide packages based on the filter text and whether or not to include packages with sources </summary>
+        public void FilterVisibleTransformations()
+        {
+            foreach (var transformation in Transformations)
+            {
+                transformation.Visible = MatchesFilterText(transformation) && MatchesPackageFilter(transformation);
+            }
+        }
+
         private List<ProjectModel> GetAllProjects(IEnumerable<Project> objects)
         {
             var projects = new List<ProjectModel>();
@@ -264,16 +279,6 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
                     if (project != null)
                         project.RemoveFromSolution(Application.Solution);
                 }
-            }
-        }
-
-        public string FilterText { get; set; }
-        public bool PackagesWithSource { get; set; }
-        public void FilterVisibleTransformations()
-        {
-            foreach (var transformation in Transformations)
-            {
-                transformation.Visible = MatchesFilterText(transformation) && MatchesPackageFilter(transformation); 
             }
         }
 
