@@ -22,7 +22,6 @@ using MyToolkit.Mvvm;
 using MyToolkit.Utilities;
 using NuGetReferenceSwitcher.Presentation.Models;
 using VSLangProj;
-using System.Collections;
 
 namespace NuGetReferenceSwitcher.Presentation.ViewModels
 {
@@ -274,11 +273,20 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
         {
             foreach (var transformation in Transformations)
             {
-                transformation.Visible = (string.IsNullOrWhiteSpace(FilterText) || transformation.FromAssemblyName.IndexOf(FilterText, StringComparison.OrdinalIgnoreCase) > -1) // If we have a filter
-                    && (!PackagesWithSource 
-                    || (PackagesWithSource && !string.IsNullOrWhiteSpace(transformation.ToProjectPath))); // Only for projects where we have a path specified
+                transformation.Visible = MatchesFilterText(transformation) && MatchesPackageFilter(transformation); 
             }
         }
-     
+
+        private bool MatchesPackageFilter(FromNuGetToProjectTransformation transformation)
+        {
+            return !PackagesWithSource || // All packages
+                   !string.IsNullOrWhiteSpace(transformation.EvaluatedToProjectPath);
+        }
+
+        private bool MatchesFilterText(FromNuGetToProjectTransformation transformation)
+        {
+            return string.IsNullOrWhiteSpace(FilterText) || 
+                   transformation.FromAssemblyName.IndexOf(FilterText, StringComparison.OrdinalIgnoreCase) > -1;
+        }
     }
 }

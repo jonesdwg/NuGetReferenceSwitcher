@@ -106,7 +106,7 @@ namespace NuGetReferenceSwitcher.Presentation.Models
         /// <summary>Gets the evaluated to project path. </summary>
         public string EvaluatedToProjectPath
         {
-            get { return SelectedMode == NuGetToProjectMode.ProjectPath ? ToProjectPath : ToProject.Path; }
+            get { return SelectedMode == NuGetToProjectMode.ProjectPath ? ToProjectPath : ToProject?.Path; }
         }
     }
 }

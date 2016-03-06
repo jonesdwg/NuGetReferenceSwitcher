@@ -37,8 +37,8 @@
                     <TextBlock Text="NuGet to Project switches" Grid.Row="0" Grid.Column="0" 
                                FontWeight="Bold" FontSize="16" Margin="8" />
                     <StackPanel Orientation="Horizontal" Grid.Row="1">
-                        <TextBlock Margin="8">Filter</TextBlock>
-                        <TextBox Margin="4" MinWidth="100"  Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFilterChanged"></TextBox>
+                        <TextBlock Margin="8,4,4,4">Filter</TextBlock>
+                        <TextBox Margin="4" MinWidth="100" Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFilterChanged"></TextBox>
                         <CheckBox Margin="4" IsChecked="{Binding PackagesWithSource, Mode=TwoWay}" Checked="OnFilterChanged" Unchecked="OnFilterChanged">Only Packages With Source</CheckBox>
                     </StackPanel>
                     <ScrollViewer Grid.Row="2" Grid.Column="0">
