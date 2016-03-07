@@ -65,6 +65,8 @@ namespace NuGetReferenceSwitcher.Presentation.Models
         }
 
         private bool _visible = true;
+        private string _toProjectSearchPath;
+
         public bool Visible
         {
             get { return _visible; }
@@ -103,10 +105,21 @@ namespace NuGetReferenceSwitcher.Presentation.Models
             }
         }
 
+        /// <summary>Gets or sets the project path found whilst searching for projects. </summary>
+        public string ToProjectSearchPath
+        {
+            get { return _toProjectSearchPath; }
+            set { Set(ref _toProjectSearchPath, value); }
+        }
+
         /// <summary>Gets the evaluated to project path. </summary>
         public string EvaluatedToProjectPath
         {
-            get { return SelectedMode == NuGetToProjectMode.ProjectPath ? ToProjectPath : ToProject?.Path; }
+            get
+            {
+                var toProjectPath = SelectedMode == NuGetToProjectMode.ProjectPath ? ToProjectPath : ToProject?.Path;
+                return !string.IsNullOrEmpty(toProjectPath) ? toProjectPath : ToProjectSearchPath;
+            }
         }
     }
 }

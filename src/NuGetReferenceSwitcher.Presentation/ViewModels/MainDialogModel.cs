@@ -28,11 +28,14 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
     public class MainDialogModel : ViewModelBase
     {
         private Assembly _extensionAssembly;
+        private string _selectedSearchDirectory;
+        private SolutionModel _solution;
 
         public MainDialogModel()
         {
             Projects = new ExtendedObservableCollection<ProjectModel>();
             Transformations = new ExtendedObservableCollection<FromNuGetToProjectTransformation>();
+            SearchDirectories = new ExtendedObservableCollection<string>();
 
             RemoveProjects = true;
             SaveProjects = true;
@@ -43,6 +46,18 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
 
         /// <summary>Gets the NuGet to project switches which are shown in the first tab. </summary>
         public ExtendedObservableCollection<FromNuGetToProjectTransformation> Transformations { get; private set; }
+
+        /// <summary>Gets a list of search directories to search for nuget package source code. </summary>
+        public ExtendedObservableCollection<string> SearchDirectories { get; private set; }
+
+        /// <summary>
+        /// The selected search directory
+        /// </summary>
+        public string SelectedSearchDirectory
+        {
+            get { return _selectedSearchDirectory; }
+            set { Set(ref _selectedSearchDirectory, value); }
+        }
 
         /// <summary>Gets or sets a value indicating whether the changed projects should be saved. </summary>
         public bool SaveProjects { get; set; }
@@ -83,13 +98,17 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
         /// (after the InitializeComponent method of a <see cref="!:UserControl"/>). </summary>
         public async override void Initialize()
         {
+            _solution = null;
             List<ProjectModel> projects = null;
             await RunTaskAsync(token => Task.Run(() =>
             {
                 if (Application != null)
                 {
                     if (Application.Solution != null)
+                    {
+                        _solution = new SolutionModel(Application.Solution);                        
                         projects = GetAllProjects(Application.Solution.Projects.OfType<Project>());
+                    }
                 }
             }, token));
 
@@ -99,6 +118,30 @@ namespace NuGetReferenceSwitcher.Presentation.ViewModels
                 .GroupBy(r => r.Name)
                 .Select(g => new FromNuGetToProjectTransformation(projects, g.First()))
                 .OrderBy(s => s.FromAssemblyName));
+            SearchDirectories.Initialize(_solution.SearchDirectories);
+
+            if (SearchDirectories.Count > 0)
+            {
+                SearchForProjectSources();
+            }
+        }
+
+        public async void SearchForProjectSources()
+        {
+            IDictionary<string, string> map = null;
+            await RunTaskAsync(token => Task.Run(() =>
+            {
+                map = _solution.BuildPackageMap(SearchDirectories.ToArray());
+            }, token));
+
+            foreach (var transformation in Transformations)
+            {
+                string projectPath;
+                map.TryGetValue(transformation.FromAssemblyName, out projectPath);
+                transformation.ToProjectSearchPath = projectPath;
+            }
+
+            _solution.SaveSearchDirectories(SearchDirectories);
         }
 
         /// <summary>Switches the NuGet DLL references to the selected project references. </summary>

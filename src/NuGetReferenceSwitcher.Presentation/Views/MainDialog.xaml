@@ -62,6 +62,7 @@
 
                                         <StackPanel Visibility="{Binding SelectedMode, Mode=OneWay, ConverterParameter='Deactivated', Converter={StaticResource NotNuGetToProjectModeConverter}}" 
                                                     Margin="0,4,0,0">
+                                            <TextBlock Text="{Binding ToProjectSearchPath}"></TextBlock>
                                             <StackPanel Visibility="{Binding SelectedMode, Mode=OneWay, ConverterParameter='ProjectPath', Converter={StaticResource NuGetToProjectModeConverter}}">
                                                 <Button Content="Select Project to add" Click="OnSelectProjectFile" Tag="{Binding}" />
                                                 <TextBlock Text="{Binding ToProjectPath}" TextWrapping="Wrap" Margin="0,4,0,0"
@@ -151,6 +152,27 @@
                         <Button Content="Switch to NuGet references" Click="OnSwitchToNuGetReferences" Padding="4" />
                     </StackPanel>
                 </Grid>
+            </TabItem>
+            <TabItem Header="Project Sources">
+                <StackPanel Margin="8">
+                    <TextBlock Margin="0,0,0,8" FontSize="14">
+                        You can specify directories to automatically search for the source code for packages.
+                    </TextBlock>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <ListBox Grid.Column="0" SelectionMode="Single" ItemsSource="{Binding SearchDirectories}" SelectedItem="{Binding SelectedSearchDirectory, Mode=TwoWay}">
+                        </ListBox>
+                        <StackPanel Grid.Column="1" Margin="4">
+                            <Button Margin="2" Content="+" Width="Auto" ToolTip="Add a new search directory" Click="OnAddSearchDirectory" Tag="{Binding}"></Button>
+                            <Button Margin="2" Content="x"  Width="Auto" ToolTip="Remove the selected directory" Click="OnRemoveSelectedSearchDirectory"></Button>
+                            <Button Margin="2" Content="↑"  Width="Auto" ToolTip="Move the selected directory higher in the search order" Click="OnMoveUpSelectedSearchDirectory"></Button>
+                            <Button Margin="2" Content="↓" Width="Auto" ToolTip="Move the selected directory lower in the search order" Click="OnMoveDownSelectedSearchDirectory"></Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
             </TabItem>
             <TabItem Header="About">
                 <StackPanel Margin="8">

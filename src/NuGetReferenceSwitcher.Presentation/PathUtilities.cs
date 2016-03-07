@@ -21,5 +21,12 @@ namespace NuGetReferenceSwitcher.Presentation
             }
             return filePath;
         }
+
+        public static string GetFilePathWithAlternateExtension(string filePath, string fileExtension)
+        {
+            var directory = Path.GetDirectoryName(filePath);
+            var fileName = Path.GetFileNameWithoutExtension(filePath);
+            return Path.Combine(directory, fileName + fileExtension);
+        }
     }
 }

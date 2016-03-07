@@ -26,8 +26,9 @@ namespace NuGetReferenceSwitcher.Presentation.Views
     /// <summary>Interaction logic for MainDialog.xaml </summary>
     public partial class MainDialog : Window
     {
-        private OpenFileDialog _dlg;
-        
+        private OpenFileDialog _fileDlg;
+        private FolderBrowserDialog _folderDlg;
+
         /// <summary>Initializes a new instance of the <see cref="MainDialog"/> class. </summary>
         /// <param name="application">The application object. </param>
         /// <param name="extensionAssembly">The assembly of the extension. </param>
@@ -89,20 +90,87 @@ namespace NuGetReferenceSwitcher.Presentation.Views
         private void OnSelectProjectFile(object sender, RoutedEventArgs e)
         {
             var fntpSwitch = (FromNuGetToProjectTransformation)((Button)sender).Tag;
-            if (_dlg == null)
+            if (_fileDlg == null)
             {
-                _dlg = new OpenFileDialog();
-                _dlg.Filter = "CSharp Projects (*.csproj)|*.csproj|VB.NET Projects (*.vbproj)|*.vbproj";
+                _fileDlg = new OpenFileDialog();
+                _fileDlg.Filter = "CSharp Projects (*.csproj)|*.csproj|VB.NET Projects (*.vbproj)|*.vbproj";
 
                 // switch to VB if any VB project is already referenced
                 if (Model.Transformations.Any(t => t.ToProjectPath != null && t.ToProjectPath.EndsWith(".vbproj", System.StringComparison.OrdinalIgnoreCase)))
-                    _dlg.FilterIndex = 2;
+                    _fileDlg.FilterIndex = 2;
             }
 
-            _dlg.Title = string.Format("Select Project for '{0}'", fntpSwitch.FromAssemblyName);
+            _fileDlg.Title = string.Format("Select Project for '{0}'", fntpSwitch.FromAssemblyName);
 
-            if (_dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                fntpSwitch.ToProjectPath = _dlg.FileName;
+            if (_fileDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                fntpSwitch.ToProjectPath = _fileDlg.FileName;
+        }
+
+        private void OnAddSearchDirectory(object sender, RoutedEventArgs e)
+        {
+            if (_folderDlg == null)
+            {
+                _folderDlg = new FolderBrowserDialog();                              
+            }
+
+            if (_folderDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (!Model.SearchDirectories.Contains(_folderDlg.SelectedPath))
+                {
+                    Model.SearchDirectories.Add(_folderDlg.SelectedPath);
+                    Model.SearchForProjectSources();
+                }
+            }               
+        }
+
+        private void OnRemoveSelectedSearchDirectory(object sender, RoutedEventArgs e)
+        {
+            if (Model.SelectedSearchDirectory != null)
+            {
+                Model.SearchDirectories.Remove(Model.SelectedSearchDirectory);
+                Model.SearchForProjectSources();
+            }
+        }
+
+        private void OnMoveUpSelectedSearchDirectory(object sender, RoutedEventArgs e)
+        {
+            if (Model.SelectedSearchDirectory != null)
+            {
+                var selected = Model.SelectedSearchDirectory;
+                var index = Model.SearchDirectories.IndexOf(selected);
+                if (index > 0)
+                {
+                    Model.SearchDirectories.RemoveAt(index);
+                    Model.SearchDirectories.Insert(index -1, selected);
+                    Model.SelectedSearchDirectory = selected;
+
+                    Model.SearchForProjectSources();
+                }
+            }
+        }
+
+        private void OnMoveDownSelectedSearchDirectory(object sender, RoutedEventArgs e)
+        {
+            if (Model.SelectedSearchDirectory != null)
+            {
+                var selected = Model.SelectedSearchDirectory;
+                var index = Model.SearchDirectories.IndexOf(selected);
+                if (index < Model.SearchDirectories.Count - 1)
+                {
+                    Model.SearchDirectories.RemoveAt(index);
+                    if (index + 1 == Model.SearchDirectories.Count - 1)
+                    {
+                        Model.SearchDirectories.Add(selected);
+                    }
+                    else
+                    {
+                        Model.SearchDirectories.Insert(index + 1, selected);
+                    }
+                    Model.SelectedSearchDirectory = selected;
+
+                    Model.SearchForProjectSources();
+                }
+            }
         }
     }
 }

@@ -122,10 +122,7 @@ namespace NuGetReferenceSwitcher.Presentation.Models
 
         private string GetConfigurationPath(string fileExtension)
         {
-            var projectPath = _vsProject.Project.FileName;
-            var projectDirectory = System.IO.Path.GetDirectoryName(projectPath);
-            var projectName = System.IO.Path.GetFileNameWithoutExtension(projectPath);
-            return System.IO.Path.Combine(projectDirectory, projectName + fileExtension);
+            return PathUtilities.GetFilePathWithAlternateExtension(_vsProject.Project.FileName, fileExtension);
         }
 
         private List<FromProjectToNuGetTransformation> LoadTransformationsFromFile(string configurationPath)
